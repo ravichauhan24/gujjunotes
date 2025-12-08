@@ -1,0 +1,124 @@
+/* =======================
+   GujjuNotes Global Styles
+   ======================= */
+
+body {
+  background-color: #f9fafb;
+  font-family: 'Segoe UI', sans-serif;
+  font-size: 16px;
+  margin: 0;
+  /* padding-top: 70px; for fixed navbar spacing */
+}
+
+/* ========== Navbar ========== */
+.navbar {
+  box-shadow: 0 0.25rem 0.75rem rgba(0, 0, 0, 0.05);
+  z-index: 1030;
+}
+
+.navbar-brand {
+  font-weight: bold;
+  font-size: 1.25rem;
+  color: #0d6efd;
+}
+
+.nav-link {
+  font-weight: 500;
+}
+
+/* ========== Hero Section ========== */
+.hero {
+  background: linear-gradient(to right, #fff9db, #fff);
+  padding: 60px 20px;
+  text-align: center;
+}
+
+.hero h1 {
+  font-size: 2rem;
+  font-weight: 600;
+}
+
+.hero .btn {
+  padding: 10px 20px;
+  font-weight: 500;
+}
+
+/* ========== Note Cards ========== */
+.card-note {
+  transition: all 0.3s ease-in-out;
+  border: 1px solid #dee2e6;
+  border-radius: 0.5rem;
+}
+
+.card-note:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.05);
+}
+
+.card-note .card-title {
+  font-weight: 600;
+}
+
+/* ========== Upload / Search Section ========== */
+.category-btn {
+  margin: 6px;
+  border-radius: 20px;
+  font-size: 14px;
+}
+
+.search-section input,
+.search-section select {
+  border-radius: 0.375rem;
+}
+
+/* ========== Login/Register Cards ========== */
+.login-card,
+.register-card {
+  max-width: 800px;
+  margin: 50px auto;
+  border-radius: 1rem;
+}
+
+.login-img,
+.register-img {
+  object-fit: cover;
+  height: 100%;
+  border-radius: 1rem 0 0 1rem;
+}
+
+/* ========== Footer ========== */
+footer {
+  font-size: 14px;
+  background-color: #f1f3f5;
+  border-top: 1px solid #dee2e6;
+}
+
+footer a {
+  color: #6c757d;
+  text-decoration: none;
+}
+
+footer a:hover {
+  text-decoration: underline;
+}
+
+/* ========== Utility ========== */
+.text-muted {
+  color: #6c757d !important;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .navbar-nav {
+    text-align: center;
+  }
+
+  .hero h1 {
+    font-size: 1.5rem;
+  }
+}
+
+/* Optional spacing for fixed-top header */
+.header-spacer {
+  height: 70px;
+}

@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <title>Register - GujjuNotes</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <!-- Bootstrap & FontAwesome -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet" />
+
+  <style>
+    body {
+      background-color: #e1f0ff;
+      height: 100vh;
+      margin: 0;
+    }
+
+    .full-height {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+    }
+
+    .register-card {
+      max-width: 600px;
+      width: 100%;
+      border-radius: 1rem;
+    }
+
+    .register-img {
+      object-fit: cover;
+      height: 100%;
+      border-radius: 1rem 0 0 1rem;
+    }
+
+    #otpMessage {
+      font-weight: 500;
+    }
+
+    @media (max-width: 767px) {
+      .register-card {
+        border-radius: 0.75rem;
+        margin: 20px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container-fluid full-height">
+    <div class="card register-card shadow">
+      <div class="row g-0">
+
+        <!-- Image -->
+        <div class="col-md-5 d-none d-md-block">
+          <img src="https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-login-form/img2.webp" class="img-fluid register-img" alt="Register Image" />
+        </div>
+
+        <!-- Form -->
+        <div class="col-md-7 d-flex align-items-center">
+          <div class="card-body p-4 w-100">
+            <form id="otpForm">
+
+              <div class="d-flex align-items-center mb-3 pb-1">
+                <i class="fas fa-user-plus fa-2x me-3 text-primary"></i>
+                <span class="h1 fw-bold mb-0">Register</span>
+                
+
+              </div>
+
+              <h5 class="fw-normal mb-3 pb-2">Create your <a href="index.html" class="h5 fw-bold mb-0 text-decoration-none text-danger">GujjuNotes</a>
+ account</h5>
+
+              <div class="mb-3">
+                <label class="form-label">📧 Email address</label>
+                <input type="email" name="email" class="form-control" placeholder="you@example.com" required />
+              </div>
+
+              <div class="d-grid mb-3">
+                <button type="button" onclick="sendOtp()" class="btn btn-outline-primary">Send OTP</button>
+              </div>
+
+              <div class="mb-3">
+                <label class="form-label">📨 OTP Code</label>
+                <input type="text" name="otp" class="form-control" placeholder="Enter OTP" required />
+              </div>
+
+              <div class="mb-3">
+                <label class="form-label">👤 Username</label>
+                <input type="text" name="username" class="form-control" placeholder="Choose username" required />
+              </div>
+
+              <div class="mb-3">
+                <label class="form-label">🔑 Password</label>
+                <input type="password" name="password" class="form-control" placeholder="Password" required />
+              </div>
+
+              <div class="d-grid mb-2">
+                <button type="submit" class="btn btn-success">Register</button>
+              </div>
+
+              <p id="otpMessage" class="text-center text-danger mt-3"></p>
+
+              <div class="text-center mt-3">
+                Already have an account? <a href="login.html" class="text-primary text-decoration-none">Login</a>
+              </div>
+
+            </form>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- JS -->
+  <script>
+    function sendOtp() {
+      const email = document.querySelector('[name="email"]').value;
+
+      fetch('http://localhost:5000/api/send-otp', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email })
+      })
+        .then(res => res.json())
+        .then(data => {
+          const msgDiv = document.getElementById('otpMessage');
+          msgDiv.innerText = data.message;
+          msgDiv.classList.remove('text-danger', 'text-success');
+          msgDiv.classList.add(data.success ? 'text-success' : 'text-danger');
+        });
+    }
+
+    document.getElementById('otpForm').addEventListener('submit', function (e) {
+      e.preventDefault();
+      const formData = new FormData(this);
+      const body = Object.fromEntries(formData.entries());
+
+      fetch('http://localhost:5000/api/signup', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body)
+      })
+        .then(async (res) => {
+          const contentType = res.headers.get('content-type');
+          if (!res.ok) {
+            const errorText = await res.text();
+            throw new Error(`Error ${res.status}: ${errorText}`);
+          }
+          return contentType.includes('application/json') ? res.json() : Promise.reject('Unexpected content type');
+        })
+        .then(data => {
+          const msgDiv = document.getElementById('otpMessage');
+          msgDiv.innerText = data.message;
+          msgDiv.classList.remove('text-danger', 'text-success');
+          msgDiv.classList.add(data.success ? 'text-success' : 'text-danger');
+
+          if (data.success) {
+            setTimeout(() => {
+              window.location.href = 'login.html';
+            }, 1200);
+          }
+        })
+        .catch(err => {
+          document.getElementById('otpMessage').innerText = 'Something went wrong!';
+          console.error("❌ Error:", err);
+        });
+    });
+  </script>
+</body>
+
+</html>

@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <title>Admin Dashboard - GujjuNotes</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <!-- Bootstrap CSS -->
+<link rel="stylesheet" href="plugins/bootstrap/css/bootstrap.min.css">
+<!-- Font Awesome -->
+<link rel="stylesheet" href="plugins/fontawesome-free/css/all.min.css">
+<!-- AdminLTE CSS -->
+<link rel="stylesheet" href="css/adminlte.min.css">
+
+    
+   
+
+
+    <style>
+        body {
+            background-color: #f1f5f9;
+        }
+
+        .navbar-brand {
+            font-weight: bold;
+        }
+
+        .card:hover {
+            transform: translateY(-3px);
+            transition: 0.2s ease-in-out;
+        }
+    </style>
+</head>
+
+<body>
+
+   
+
+    <!-- Navbar -->
+  <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm">
+        <div class="container">
+            <a class="navbar-brand" href="index.html">GujjuNotes Admin</a>
+            <span class="ms-auto">👤 <b id="adminName">Admin</b></span>
+            <button onclick="logout()" class="btn btn-outline-danger btn-sm ms-3">Logout</button>
+        </div>
+    </nav>
+
+    <!-- Filters -->
+    <section class="container my-4">
+  <div class="row g-2">
+    <div class="col-md-2">
+      <input type="text" id="filterSubject" class="form-control" placeholder="Subject" />
+    </div>
+    <div class="col-md-2">
+      <select id="filterSemester" class="form-select">
+        <option value="">All Semesters</option>
+        <option>1</option><option>2</option><option>3</option>
+        <option>4</option><option>5</option><option>6</option>
+      </select>
+    </div>
+    <div class="col-md-2">
+      <select id="filterType" class="form-select">
+        <option value="">All Types</option>
+        <option value="free">Free</option>
+        <option value="paid">Paid</option>
+      </select>
+    </div>
+    <div class="col-md-2">
+      <input type="text" id="filterUniversity" class="form-control" placeholder="University" />
+    </div>
+    <div class="col-md-2">
+      <input type="text" id="filterAuthor" class="form-control" placeholder="Author Name" />
+    </div>
+    <div class="col-md-2">
+      <button onclick="searchNotes()" class="btn btn-primary w-100">Search</button>
+    </div>
+  </div>
+</section>
+
+    <!-- Notes Table -->
+    <div class="container mt-5">
+        <div class="table-responsive">
+            <table class="table table-bordered table-striped align-middle">
+                <thead class="table-dark">
+                      <tr>
+                            <th>#</th>
+                            <th>Subject</th>
+                            <th>Semester</th>
+                            <th>Uploader</th>
+                            <th>uploadMail</th>
+                            <th>University</th>
+                            <th>Author</th>
+                            <th>Self Made</th>
+                            <th>Type</th>
+                            <th>Download</th>
+                            <th>Status</th>
+                            <th>Action</th>
+                        </tr>
+                </thead>
+                <tbody id="notesTableBody"></tbody>
+            </table>
+        </div>
+    </div>
+
+    
+
+    <script>
+        const token = localStorage.getItem('token');
+        const user = JSON.parse(localStorage.getItem('user'));
+
+        if (!token || !user || user.role !== 'admin') {
+            alert("Access denied. Admins only.");
+            window.location.href = 'login.html';
+        } else {
+            document.getElementById('adminName').textContent = user.username;
+        }
+
+       function logout() {
+          localStorage.clear();
+           window.location.href = 'index.html';
+        }
+
+        // Fetch and display notes
+        async function fetchNotes(url = 'http://localhost:5000/api/notes/') {
+            const res = await fetch(url);
+            const notes = await res.json();
+            renderNotes(notes);
+        }
+
+        function renderNotes(notes) {
+            const tbody = document.getElementById('notesTableBody');
+            tbody.innerHTML = '';
+            if (notes.length === 0) {
+                     tbody.innerHTML = `<tr><td colspan="8" class="text-center text-muted">No notes found.</td></tr>`;
+
+                return;
+            }
+            notes.forEach((note, index) => {
+                tbody.innerHTML += `
+            <tr>
+                <td>${index + 1}</td>
+                <td>${note.subject}</td>
+                <td>${note.semester}</td>
+                <td>${note.uploaderName}</td>
+                <td>${note.uploadMail}</td> 
+                <td>${note.university || '-'}</td>
+                <td>${note.authorName || '-'}</td>
+                <td>${note.selfMade ? 'Yes' : 'No'}</td>
+                <td>${note.noteType.charAt(0).toUpperCase() + note.noteType.slice(1)}</td>
+                <td>
+                    <a href="http://localhost:5000${note.fileUrl}" download class="btn btn-sm btn-primary">Download</a>
+                </td>
+                <td>
+                    ${note.approved
+                    ? '<span class="badge bg-success">Approved</span>'
+                    : '<span class="badge bg-warning text-dark">Pending</span>'}
+                </td>
+                <td>
+                    ${!note.approved
+                    ? `<button class="btn btn-sm btn-success me-2" onclick="approveNote(${note.id})">Approve</button>`
+                    : ''}
+                    <button class="btn btn-sm btn-danger" onclick="deleteNote(${note.id}, '${note.fileUrl}')">Delete</button>
+                </td>
+         </tr>
+        
+
+
+        `;
+            });
+        }
+
+        // Search functionality
+        async function searchNotes() {
+            const subject = document.getElementById('filterSubject').value;
+            const semester = document.getElementById('filterSemester').value;
+            const noteType = document.getElementById('filterType').value;
+            const university = document.getElementById('filterUniversity').value;
+            const authorName = document.getElementById('filterAuthor').value;
+
+            let url = `http://localhost:5000/api/notes/search?`;
+            if (subject) url += `subject=${subject}&`;
+            if (semester) url += `semester=${semester}&`;
+            if (noteType) url += `noteType=${noteType}`;
+            if (university) url += `university=${university}&`;
+             if (authorName) url += `authorName=${authorName}`;
+
+            fetchNotes(url);
+        }
+
+        // Delete a note
+        async function deleteNote(id, fileUrl) {
+            if (!confirm('Are you sure you want to delete this note?')) return;
+            const res = await fetch(`http://localhost:5000/api/notes/${id}`, {
+                method: 'DELETE',
+                headers: {
+                    'Authorization': 'Bearer ' + token
+                }
+            });
+
+
+            const data = await res.json();
+            if (data.success) {
+                alert("Note deleted.");
+                fetchNotes();
+            } else {
+                alert("Error deleting note.");
+            }
+        }
+
+        //approved
+                async function approveNote(id) {
+        const res = await fetch(`http://localhost:5000/api/notes/approve/${id}`, {
+            method: 'PUT',
+            headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer ' + localStorage.getItem('token')
+            }
+        });
+
+        const data = await res.json();
+        if (data.success) {
+            alert('Note approved!');
+            fetchNotes(); // reload notes
+        } else {
+            alert('Approval failed!');
+        }
+        }
+
+
+        fetchNotes(); // Initial load
+    </script>
+    <script>
+  fetch('header.html')
+    .then(res => res.text())
+    .then(data => {
+      document.getElementById('header-container').innerHTML = data;
+    });
+</script>
+</body>
+
+</html>
