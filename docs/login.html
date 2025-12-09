@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Login - GujjuNotes</title>
+  
+
+  <!-- Bootstrap CSS -->
+   
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <!-- Font Awesome -->
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet" />
+
+  <style>
+    body {
+      background-color: #ffffff;
+    }
+    .login-card {
+      max-width: 800px;
+      margin: 50px auto;
+      border-radius: 1rem;
+    }
+    .login-img {
+      object-fit: cover;
+      height: 100%;
+      border-radius: 1rem 0 0 1rem;
+    }
+    #msg {
+      font-weight: 500;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- >>> START: NAVBAR (copy into login.html right after <body>) -->
+<nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm">
+  <div class="container">
+    <a class="navbar-brand fw-bold" href="index.html">GujjuNotes</a>
+
+    <button class="navbar-toggler" type="button"
+            data-bs-toggle="collapse"
+            data-bs-target="#navbarNav"
+            aria-controls="navbarNav"
+            aria-expanded="false"
+            aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse" id="navbarNav">
+      <ul class="navbar-nav ms-auto">
+        <li class="nav-item"><a class="nav-link" href="index.html">Home</a></li>
+        <li class="nav-item"><a class="nav-link" href="index.html#browse">Browse</a></li>
+        <li class="nav-item"><a class="nav-link" href="index.html#upload">Upload</a></li>
+        <li class="nav-item">
+          <a id="loginBtn" class="btn btn-outline-primary ms-lg-3 px-3" href="#">Login</a>
+        </li>
+      </ul>
+    </div>
+  </div>
+</nav>
+<!-- <<< END: NAVBAR -->
+
+
+
+<div class="container">
+  <div class="card login-card shadow">
+    <div class="row g-0">
+
+      <!-- Image Column -->
+      <div class="col-md-5 d-none d-md-block">
+        <img
+          src="https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-login-form/img1.webp"
+          alt="Login Image"
+          class="img-fluid login-img" />
+      </div>
+
+      <!-- Form Column -->
+      <div class="col-md-7 d-flex align-items-center">
+        <div class="card-body p-4 p-md-5 w-100">
+
+          <form onsubmit="login(event)">
+
+            <div class="d-flex align-items-center mb-3 pb-1">
+              <i class="fas fa-cubes fa-2x me-3" style="color: #ff6219;"></i>
+              <!-- <span class="h1 fw-bold mb-0">GujjuNotes</span> -->
+              <a href="index.html" class="h1 fw-bold mb-0 text-decoration-none text-dark">GujjuNotes</a>
+
+            </div>
+
+            <h5 class="fw-normal mb-3 pb-2">Sign into your account</h5>
+
+            <!-- Username -->
+            <div class="form-outline mb-4">
+              <label class="form-label" for="username">Username</label>
+              <input type="text" id="username" class="form-control form-control-lg" placeholder="👤 Username" required />
+            </div>
+
+            <!-- Password -->
+            <div class="form-outline mb-4">
+              <label class="form-label" for="password">Password</label>
+              <input type="password" id="password" class="form-control form-control-lg" placeholder="🔑 Password" required />
+            </div>
+
+            <!-- Login Button -->
+            <div class="pt-1 mb-3 d-grid">
+              <button class="btn btn-dark btn-lg" type="submit">Login</button>
+            </div>
+
+            <!-- Register Button -->
+            <div class="d-grid mb-2">
+              <a href="register.html" class="btn btn-outline-dark">Register</a>
+            </div>
+
+            <p id="msg" class="text-danger text-center mt-2"></p>
+
+            <div class="mt-2 text-center">
+              <a href="#" class="small text-muted text-decoration-none ">Forgot password?</a>
+            </div>
+            <div class="d-flex flex-wrap gap-2 justify-content-center mt-2">
+              <a href="#" class="small text-muted text-decoration-none">Terms of use</a>
+              <a href="#" class="small text-muted text-decoration-none">Privacy policy</a>
+            </div>
+
+          </form>
+
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+
+<!-- Bootstrap JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+
+<!-- Login Script -->
+<script>
+  async function login(e) {
+    e.preventDefault();
+
+    const username = document.getElementById('username').value.trim();
+    const password = document.getElementById('password').value.trim();
+    const msg = document.getElementById('msg');
+    msg.textContent = ''; // clear previous
+
+    try {
+      const res = await fetch('http://localhost:5000/api/auth/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username, password })
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        msg.textContent = data.message || 'Login failed';
+        return;
+      }
+
+      // Save token and user info
+      localStorage.setItem('token', data.token);
+      localStorage.setItem('user', JSON.stringify(data.user));
+
+      msg.classList.remove('text-danger');
+      msg.classList.add('text-success');
+      msg.textContent = 'Login successful! Redirecting...';
+
+      // Redirect based on role
+      setTimeout(() => {
+        if (data.user.role === 'admin') {
+          window.location.href = 'admin.html';
+          window.location.href = 'dashboard/admin-lte/index.html';
+        } else {
+          window.location.href = 'students.html';
+        }
+      }, 1200);
+    } catch (err) {
+      msg.textContent = 'Server error. Please try again.';
+      console.error(err);
+    }
+  }
+</script>
+
+</body>
+</html>

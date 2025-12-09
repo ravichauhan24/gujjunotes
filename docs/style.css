@@ -1,0 +1,152 @@
+/* ============================
+   GujjuNotes Global Styles
+=============================== */
+
+body {
+  background-color: #f9fafb;
+  font-family: 'Segoe UI', sans-serif;
+  margin: 0;
+  font-size: 16px;
+}
+
+/* ================= NAVBAR ================= */
+.navbar {
+  position: sticky;
+  top: 0;
+  z-index: 1030;
+  background: white !important;
+  box-shadow: 0 0.25rem 0.75rem rgba(0, 0, 0, 0.05);
+}
+
+/* make toggler sit above overlays */
+.navbar .navbar-toggler {
+  z-index: 2000;
+  position: relative;
+  pointer-events: auto;
+}
+
+.navbar-brand {
+  color: #0d6efd !important;
+  font-size: 1.25rem;
+  font-weight: bold;
+  text-decoration: none;
+}
+
+.nav-link {
+  font-weight: 500;
+  color: #333 !important;
+}
+
+.nav-link:hover {
+  color: #0d6efd !important;
+}
+
+/* Hamburger (toggler) icon custom color */
+.navbar-light .navbar-toggler-icon {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3E%3Cpath stroke='rgba(13,110,253,0.9)' stroke-linecap='round' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3E%3C/svg%3E");
+}
+
+/* ---------- Safety rules to protect collapse/show behavior ---------- */
+/* ensure .collapse.show is visible even if other CSS interferes */
+.collapse { display: none; }
+.collapse.show { display: block !important; }
+
+/* On larger screens the collapse becomes flex (Bootstrap default) */
+@media (min-width: 992px) {
+  .collapse.show { display: flex !important; }
+}
+
+/* pointer events safety */
+.navbar, .navbar * { pointer-events: auto !important; }
+
+/* small transition to keep toggling smooth */
+.navbar-collapse, .navbar .collapse {
+  transition: height .25s ease;
+  overflow: visible;
+}
+
+/* Center menu when collapsed */
+@media (max-width: 768px) {
+  .navbar-nav { text-align: center; }
+}
+
+/* ========== HERO ========== */
+.hero {
+  background: linear-gradient(to right, #fff9db, #fff);
+  padding: 60px 20px;
+  text-align: center;
+}
+
+.hero h1 {
+  font-size: 2rem;
+  font-weight: 600;
+}
+
+.hero .btn {
+  padding: 10px 20px;
+  font-weight: 500;
+}
+
+/* ========== NOTE CARDS ========== */
+.card-note {
+  border: 1px solid #dee2e6;
+  border-radius: 0.5rem;
+  transition: 0.3s ease;
+}
+
+.card-note:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 0.5rem 1rem rgba(0,0,0,0.07);
+}
+
+.card-note .card-title {
+  font-weight: 600;
+}
+
+/* ========== UPLOAD / SEARCH ========== */
+.category-btn {
+  margin: 6px;
+  border-radius: 20px;
+  font-size: 14px;
+}
+
+.search-section input,
+.search-section select {
+  border-radius: 0.375rem;
+}
+
+/* ========== LOGIN / REGISTER CARDS ========== */
+.login-card,
+.register-card {
+  max-width: 800px;
+  margin: 50px auto;
+  border-radius: 1rem;
+}
+
+.login-img,
+.register-img {
+  object-fit: cover;
+  height: 100%;
+  border-radius: 1rem 0 0 1rem;
+}
+
+/* ========== FOOTER ========== */
+footer {
+  font-size: 14px;
+  background-color: #f1f3f5;
+  border-top: 1px solid #dee2e6;
+}
+
+footer a {
+  color: #6c757d;
+  text-decoration: none;
+}
+
+footer a:hover {
+  text-decoration: underline;
+}
+
+/* Utility */
+.text-muted {
+  color: #6c757d !important;
+}

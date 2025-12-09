@@ -1,0 +1,63 @@
+<!-- gujjunotes-frontend/header.html -->
+<!-- NAVBAR FRAGMENT (no <html>, no <head>, no <body>, no bootstrap includes) -->
+
+<nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm">
+  <div class="container">
+    <a class="navbar-brand fw-bold" href="index.html">GujjuNotes</a>
+
+    <!-- Mobile Toggle -->
+    <button class="navbar-toggler" type="button"
+            data-bs-toggle="collapse"
+            data-bs-target="#navbarNav"
+            aria-controls="navbarNav"
+            aria-expanded="false"
+            aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <!-- Menu -->
+    <div class="collapse navbar-collapse" id="navbarNav">
+      <ul class="navbar-nav ms-auto">
+        <li class="nav-item"><a class="nav-link" href="index.html">Home</a></li>
+        <li class="nav-item"><a class="nav-link" href="index.html#browse">Browse</a></li>
+        <li class="nav-item"><a class="nav-link" href="index.html#upload">Upload</a></li>
+        <li class="nav-item">
+          <a id="loginBtn" class="btn btn-outline-primary ms-lg-3 px-3" href="#">Login</a>
+        </li>
+      </ul>
+    </div>
+  </div>
+</nav>
+
+<!-- Inline script to set login/logout button state.
+     Note: this script will be executed after the fragment is injected by header-loader.js. -->
+<script>
+  document.addEventListener("DOMContentLoaded", () => {
+    const loginBtn = document.getElementById("loginBtn");
+    if (!loginBtn) return;
+
+    const token = localStorage.getItem("token");
+    let user = null;
+    try { user = JSON.parse(localStorage.getItem("user")); } catch (e) { user = null; }
+
+    if (user && token) {
+      loginBtn.textContent = "Logout";
+      loginBtn.classList.remove("btn-outline-primary");
+      loginBtn.classList.add("btn-danger");
+      loginBtn.setAttribute("href", "#");
+
+      loginBtn.addEventListener("click", (e) => {
+        e.preventDefault();
+        localStorage.removeItem("token");
+        localStorage.removeItem("user");
+        // redirect to homepage (change to full path if needed)
+        window.location.href = "index.html";
+      });
+    } else {
+      loginBtn.textContent = "Login";
+      loginBtn.classList.remove("btn-danger");
+      loginBtn.classList.add("btn-outline-primary");
+      loginBtn.setAttribute("href", "login.html");
+    }
+  });
+</script>
